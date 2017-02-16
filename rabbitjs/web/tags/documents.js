@@ -4,26 +4,24 @@
       <div class="pull-right" style="margin-top:15px;">
         <file-ingest text="Upload Document" socket={ opts.socket } store={ opts.store }></file-ingest>
       </div>
-      <h1>Documents</h1>
 
-      <div data-is="riot-table" headers={ headers } records={ records } fetch={ fetch } record_buttons={ record_buttons }></div>
+      <div data-is="riot-table" title="Documents" headers={ headers } fetch={ fetch } record_buttons={ record_buttons }></div>
     </div>
   </div>
 
   <script>
     var self = this
     self.store = opts.store
-    self.records = opts.records || []
     self.collection = opts.collection || 'documents'
     self.query = opts.query || {}
 
     self.fetch = function(cb) {
       self.store.findAll(self.collection, self.query)
-      cb()
+      cb(self.store.getAll(self.collection))
     }
 
     self.headers = opts.headers || {
-      _id: {},
+      id: { template: "{ hashColorLine(_id) }" },
       filename: {},
       size: { template: "{ humanFileSize(size) }" },
       content_type: {}
@@ -41,11 +39,9 @@
       }
     })
 
-    self.store.on(self.collection,'DS.afterInject', function() {
-      var records = self.store.filter(self.collection,self.query)
-      console.log("DS.change", records)
-      self.update({ records: records })
-      self.tags['riot-table'].update({ records: records })
+    self.store.on(self.collection,'DS.findAll', function(records) {
+      console.log("DS FIND ALL", records)
+      self.tags["riot-table"].update({ records: records })
     })
   </script>
 </documents>
