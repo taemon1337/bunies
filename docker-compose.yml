@@ -1,0 +1,65 @@
+version: "2.1"
+networks:
+  working:
+    external: true
+  messaging:
+    external: true
+services:
+  api:
+    build: ./api
+    volumes:
+      - ./api:/api
+    working_dir: /api
+    command: python -u run.py
+    networks:
+      - messaging
+    environment:
+      - MONGO_HOST=mongo
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    volumes:
+      - ./data/mongo:/data/db
+    networks:
+      - messaging
+  rabbit:
+    image: rabbitmq:management
+    environment:
+      - HOSTNAME=rabbit
+      - RABBITMQ_ERLANG_COOKIE=rabbit-cookie
+      - RABBITMQ_DEFAULT_USER=rabbit
+      - RABBITMQ_DEFAULT_PASS=DFS
+    ports:
+      - 15672:15672
+    networks:
+      - messaging
+  rabbitmq:
+    image: rabbitmq:latest
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=rabbit-cookie
+    networks:
+      - messaging
+    volumes:
+      - ./conf:/etc/rabbitmq
+    depends_on:
+      - rabbit
+  rabbitjs:
+    build: ./rabbitjs
+    volumes:
+      - ./rabbitjs:/work
+      - ../common:/common
+    working_dir: /work
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=rabbit-cookie
+    command: node run.js
+    ports:
+      - 8080:8080
+    depends_on:
+      - rabbit
+      - rabbitmq
+      - api
+      - mongo
+    networks:
+      - working
+      - messaging

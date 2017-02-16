@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Bunies</title>
+  <meta name="description" content="Bunies">
+  <meta name="author" content="TS">
+
+  <!-- common files -->
+  <link rel="stylesheet" href="/common/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" />
+  <link rel="stylesheet" href="/common/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" />
+  <script type="text/javascript" src="/common/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="></script>
+  <script src="/common/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8="></script>
+  <script src="/primus/primus.io.js"></script>
+
+  <script src="/common/js-data/2.10.0/js-data.min.js"></script>
+
+  <script src="/common/riot/3.1/riot+compiler.min.js"></script>
+  <script type='text/javascript' src="/common/riot-route/3.1.0/route.js"></script>
+  <script>riot.route = route;</script>
+  <script type='riot/tag' src="/common/riot/tags/raw.js"></script>
+  <script type='text/javascript' src="/common/js/getBase64FromImageUrl.js"></script>
+  <script type='text/javascript' src="/common/js/FileSubstream.js"></script>
+  <script type='text/javascript' src="/common/js/humanFileSize.js"></script>
+  <script type='text/javascript' src="/common/js/xxhash.min.js"></script>
+  <script type='text/javascript' src="/common/js/hashColor.js"></script>
+  <script type='riot/tag' src="/common/riot/tags/record-buttons.js"></script>
+  <script type='riot/tag' src="/common/riot/tags/riot-cell.js"></script>
+  <script type='riot/tag' src="/common/riot/tags/riot-table.js"></script>
+
+  <!-- app files -->
+  <script type="riot/tag" src="tags/home.js"></script>
+  <script type="riot/tag" src="tags/file-ingest.js"></script>
+  <script type="riot/tag" src="tags/documents.js"></script>
+  <script type="riot/tag" src="tags/chat.js"></script>
+
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="col-xs-12">
+      <div id="navbar"></div>
+      <div id="main"></div>
+    </div>
+  </div>
+  <script type='text/javascript' src="js/store.js"></script>
+  <script type='text/javascript' src="js/main.js"></script>
+</body>
+</html>
