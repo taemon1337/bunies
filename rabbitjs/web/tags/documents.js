@@ -1,12 +1,7 @@
 <documents>
   <div class="row">
-    <div class="col-xs-12">
-      <div class="pull-right" style="margin-top:15px;">
-        <file-ingest text="Upload Document" socket={ opts.socket } store={ opts.store }></file-ingest>
-      </div>
-
-      <div data-is="riot-table" title="Documents" headers={ headers } fetch={ fetch } record_buttons={ record_buttons }></div>
-    </div>
+    <file-ingest text="Upload Document" socket={ opts.socket } store={ opts.store }></file-ingest>
+    <div data-is="riot-table" title="Documents" headers={ headers } fetch={ fetch } record_buttons={ record_buttons }></div>
   </div>
 
   <script>
@@ -21,14 +16,14 @@
     }
 
     self.headers = opts.headers || {
-      id: { template: "{ hashColorLine(_id) }" },
-      filename: {},
+      name: { template: "{ hashColorLine(name) }" },
       size: { template: "{ humanFileSize(size) }" },
-      content_type: {}
+      content_type: {},
+      status: {},
+      download: { text: " ", template: "<a href='./api/raw/{ file }' download={ name } target='_blank'><span class='fa fa-download'></span></a>" }
     }
 
     self.record_buttons = opts.record_buttons || [
-      { text: "Download", fa: "download", href: function(record) { return record.attached_file ? "."+record.attached_file.file : "#" }},
       { text: "Delete", fa: "trash", event: "document:delete" }
     ]
 
@@ -39,8 +34,15 @@
       }
     })
 
+    self.store.on(self.collection,'DS.afterInject', function(def, record) {
+      self.tags["riot-table"].update({ records: self.store.getAll(self.collection) })
+    })
+
+    self.store.on(self.collection,'DS.afterEject', function(def, record) {
+      self.tags["riot-table"].update({ records: self.store.getAll(self.collection) })
+    })
+
     self.store.on(self.collection,'DS.findAll', function(records) {
-      console.log("DS FIND ALL", records)
       self.tags["riot-table"].update({ records: records })
     })
   </script>

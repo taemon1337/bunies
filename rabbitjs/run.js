@@ -1,6 +1,7 @@
 var express = require('express')
   , Primus = require('primus.io')
   , http = require('http')
+  , bhttp = require('bhttp')
   , request = require('request')
   , app = express()
   , server = http.createServer(app)

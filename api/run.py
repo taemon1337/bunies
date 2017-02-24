@@ -18,12 +18,13 @@ settings = {
   'EXTENDED_MEDIA_INFO': ['name','length','content_type'],
   'MEDIA_ENDPOINT': 'raw',
   'MULTIPART_FORM_FIELDS_AS_JSON': True,
+  'XML': False,
   'DATE_FORMAT': '%Y-%m-%d %H:%M:%S',
   'DOMAIN': {
     'documents': {
       'allow_unknown': True,
       'schema': {
-        'attached_file': {
+        'file': {
           'type': 'media',
           'required': True
         },

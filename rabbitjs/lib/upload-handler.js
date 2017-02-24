@@ -1,47 +1,39 @@
 var collection = 'documents';
 
-var gridstore_options = function(data, record) {
-  record = record || {}
-  var gopt = {
-    _id: data._id || record._id,
-    mode: "w",
-    filename: data.filename || record.filename,
-    content_type: data.content_type || record.content_type,
-    chunkSize: 1024,
-    root: collection
-  }
-  return gopt;
-}
-
 module.exports = function(primus, store) {
   primus.on('connection', function(spark) {
+    var ds = null;
+
     spark.on('subscribe', function(channel, channelSpark) {
+      if(channel.name === 'DS') {
+        ds = channelSpark
+      }
       if(channel.name === 'upload') {
-        channelSpark.on('data', function(data) {
-          if(data.filename) {
-            var upstream = spark.substream(data.filename);
+        channelSpark.on('new', function(data) {
+          if(data.name) {
+            var upstream = spark.substream(data.name);
             upstream.progress = 0;
             upstream.total = data.size;
 
-            if(data._id) {
-              store.pipe(upstream, gridstore_options(data), function() {
-                console.log('Saved file to GridFS', data);
-              })
-            } else {
-              store.create(collection,data).then(function(resp) {
-                store.pipe(upstream, gridstore_options(data, resp), function() {
-                  console.log('Saved file to GridFS', resp);
-                })
-              })
-            }
+            store.pipe(collection, upstream, data).then(function(payload) {
+              console.log("Streamed File to GridFS and Created: ", payload)
+              ds.send("DS.create", { resource: collection, payload: payload })
+            }).catch(function(err) {
+              console.warn("Error creating new document from gridfs stream", err)
+            })
 
             upstream.on('data', function(chunk) {
               upstream.progress += chunk.length
-              console.log(data.filename,": ",Math.floor(upstream.progress/upstream.total*100),"%")
+              channelSpark.send(data.name+':progress',Math.floor(upstream.progress/upstream.total*100))
+              console.log(data.name,": ",Math.floor(upstream.progress/upstream.total*100),"%")
             })
 
             upstream.on('close', function() {
-              console.log("UPLOAD CLOSE: ", data.filename)
+              console.log("UPLOAD CLOSE: ", data.name)
+            })
+
+            upstream.on('end', function() {
+              console.log('UPSTREAM ENDED!')
             })
 
             upstream.on('error', function(err) {

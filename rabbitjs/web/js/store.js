@@ -9,16 +9,15 @@ function Store(socket) {
   })
 
   var Inject = function(data) {
-    console.log("INJECT: ", data)
     self.store.inject(data.resource, data.payload, data.options)
   }
   var Eject = function(data) {
-    console.log("EJECT: ", data)
     self.store.eject(data.resource, data.payload, data.options)
   }
 
   var Connect = function(evt, cb) {
     self.socket.on(evt, function(data) {
+      console.log(evt, data); 
       if(cb) { cb(data) }
       self.store.definitions[data.resource].emit(evt, data.payload)
     })
@@ -53,6 +52,7 @@ Store.prototype.emit = function(resource, evt, cb) { this.store.definitions[reso
 // Passthrough these to emulate a real store
 Passthrough("filter")
 Passthrough("getAll")
+Passthrough("get")
 
 // Connect DS methods with Websocket
 PassthroughSocket("create")

@@ -1,5 +1,32 @@
 var rabbitjs = require('rabbit.js');
 
+function htmlEscape(str) {
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+// I needed the opposite function today, so adding here too:
+function htmlUnescape(str){
+    return str
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&');
+}
+
+var clean = function(json) {
+  var cleaned = {}
+  for(var key in json) {
+    cleaned[key] = htmlEscape(json[key])
+  }
+  return cleaned;
+}
+
 module.exports = function(socket) {
   socket.on('connection', function(spark) {
     spark.rabbit = rabbitjs.createContext('amqp://rabbit:DFS@rabbit:5672');
@@ -9,8 +36,16 @@ module.exports = function(socket) {
       spark.sub = spark.rabbit.socket("SUBSCRIBE");
       spark.sub.setEncoding('utf8');
 
-      spark.on('data', function(msg) {
-        spark.pub.write(JSON.stringify(msg), 'utf8');
+      spark.on('message', function(data) {
+        spark.pub.write(JSON.stringify(data), 'utf8');
+      })
+
+      spark.on('image', function(data) {
+        spark.pub.write(JSON.stringify(data), 'utf8');
+      })
+
+      spark.on('link', function(data) {
+        spark.pub.write(JSON.stringify(data), 'utf8');
       })
 
       spark.sub.on('data', function(msg) {

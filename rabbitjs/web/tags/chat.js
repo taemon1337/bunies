@@ -18,7 +18,7 @@
       <div class="panel-body" style="height:300px;overflow-y:auto;">
         <ul class="list-unstyled">
           <li each={ message in messages }>
-            <raw content={ hashColorLine(message.user) }></raw>:
+            <span style="border-bottom:2px solid #{ hashColor(message.user) };">{ message.user }:</span>
             <span if={ message.image && message.image.startsWith('http') }><img src={ message.image } height="100"></span>
             <span if={ message.link && message.link.startsWith('http') }>
               <a target="_blank" href={ message.link }>
@@ -63,7 +63,7 @@
       if(e.target.value === "clear") {
         self.update({ messages: [] })
       } else if(e.target.value) {
-        self.socket.write({ user: self.getUser(), content: e.target.value })
+        self.socket.send('message', { user: self.getUser(), content: e.target.value })
       }
       e.target.value = ''
     }
@@ -80,7 +80,7 @@
       var url = prompt("Enter the Photo Url");
       if(url) {
         getBase64FromImageUrl(url, function(datauri) {
-          self.socket.write({ user: self.getUser(), image: datauri })
+          self.socket.send('image', { user: self.getUser(), image: datauri })
         })
       }
     }
@@ -88,14 +88,14 @@
     self.send_image = function() {
       var url = prompt("Enter the Image Url");
       if(url) {
-        self.socket.write({ user: self.getUser(), image: url })
+        self.socket.send('image', { user: self.getUser(), image: url })
       }
     }
 
     self.send_link = function() {
       var url = prompt("Enter the Link Url");
       if(url) {
-        self.socket.write({ user: self.getUser(), link: url })
+        self.socket.send('link', { user: self.getUser(), link: url })
       }
     }
 

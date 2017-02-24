@@ -7,7 +7,15 @@
   var Document = function(store) {
     return store.defineResource({
       name: "documents",
-      idAttribute: "_id"
+      idAttribute: "_id",
+      relations: {
+        hasOne: {
+          attached_file: {
+            localField: "attached_file",
+            foreignKey: "_id"
+          }
+        }
+      }
     })
   }
 
